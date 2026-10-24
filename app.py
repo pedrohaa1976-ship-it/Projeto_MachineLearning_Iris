@@ -1,5 +1,6 @@
 import streamlit as st
-
+import joblib
+modelo = joblib.load('modelos/knn_flores_iris.joblib')
 # Configuração inicial da página
 st.set_page_config(
     page_title="Classificador de Flores Iris",
@@ -86,14 +87,9 @@ dados_iris = {
 }
 
 st.write(dados_iris)
-
-# Botão para fazer a previsão
-botao_adivinhar = st.button("🔍 Adivinhar espécie da flor", type="primary")
+botao_adivinhar = st.button("Adivinhar espécie da flor", type="primary")
 
 if botao_adivinhar:
-    st.success("Botão funcionando! Aqui futuramente o modelo fará a previsão.")
-
-    st.write("Os dados enviados para o modelo seriam:")
 
     entrada_modelo = [[
         sepal_length,
@@ -102,18 +98,15 @@ if botao_adivinhar:
         petal_width
     ]]
 
-    st.code(entrada_modelo, language="python")
+    previsao = modelo.predict(entrada_modelo)
+    if previsao[0] == 0:
+        especie = "Iris Setosa"
+        st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTeOtARnk4DrvIQz7LBLVNDhO92c-yMzpE2CffNbdhYBw&s=10", caption="Iris Setosa")
+    elif previsao[0] == 1:  
+        especie = "Iris Versicolor"
+        st.image("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPevcNjSy2TPFzTV4PZwkmKcZt2zHos8g6k-vNpHOpFQ&s=10", caption="Iris Versicolor")
+    else:
+        especie = "Iris Virginica"
+        st.image("https://as1.ftcdn.net/v2/jpg/03/15/03/12/1000_F_315031217_fQSpGxilJ7yVCmPn3hyvrTFi0TmSIekn.jpg", caption="Iris Virginica")
 
-    st.warning(
-        """
-        A implementação do modelo ainda não foi adicionada.
-        O próximo passo será carregar o arquivo `.joblib` e usar `model.predict()`.
-        """
-    )
-
-st.divider()
-
-# Rodapé didático
-st.caption(
-    "Projeto didático com Streamlit + Scikit-Learn — Dataset Iris"
-)
+    st.success(f"**Resultado da Previsão:** A espécie da flor é **{especie}**!")
